@@ -1,0 +1,22 @@
+{
+  "name": "jsonreader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mwezn/JSONreader.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mwezn/JSONreader/issues"
+  },
+  "homepage": "https://github.com/mwezn/JSONreader#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
