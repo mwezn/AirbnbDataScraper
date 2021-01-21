@@ -1,5 +1,5 @@
 {
-  "name": "jsonreader",
+  "name": "AirScraper",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/mwezn/JSONreader#readme",
   "dependencies": {
-    "node-fetch": "^2.6.1"
+    "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.1",
+    "utf8": "^3.0.0"
   }
 }
