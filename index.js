@@ -3,7 +3,7 @@ const fs= require('fs')
 const fetch =require('node-fetch')
 const express= require('express')
 const app =express();
-const routes = require('./routes2') // includes the routes.js file
+const routes = require('./routes') // includes the routes.js file
 var path =require('path');
 app.use(express.json()) 
 app.use(routes) 

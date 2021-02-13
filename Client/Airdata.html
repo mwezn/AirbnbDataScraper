@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script type="text/javascript" src="infobubble.js"></script>
 <meta charset="utf-8">
 <style>
       /* Always set the map height explicitly to define the size of the div
@@ -11,14 +12,15 @@
       }
       #asyncwait{
         position: absolute;
-        font-size: 50px;
-        left: 250px;
+        font-size: 35px;
+        left: 280px;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 100%;
         margin: 0;
         padding: 0;
+        font-family: monospace;
       }
 .dropdown {
   position: absolute;
@@ -60,6 +62,9 @@
     const loc={
       Birmingham:{lat:parseFloat(52.4862),lng:parseFloat(-1.8904)},
       Coventry: {lat:parseFloat(52.4068),lng:parseFloat(-1.5197)},
+      London: {lat:parseFloat(51.5074),lng:parseFloat(-0.1278)},
+      Manchester: {lat:parseFloat(53.4808),lng:parseFloat(-2.2426)},
+      Nottingham: {lat:parseFloat(52.9548),lng:parseFloat(-1.1581)}
 
 
     }
@@ -69,35 +74,32 @@
     <div class="dropdown">
       <label class="shadow"><b>Select UK City:</b></label>
     <div class="dropdown-content">
-      <p onclick="" onmouseover="markerp({coords:{lat:parseFloat(52.4862),lng:parseFloat(-1.8904)}})" onmouseout="removeMarkers(this.name)" id="Birmingham" name="0"> <b>Birmingham</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(52.4862),lng:parseFloat(-1.8904)}})" onmouseout="removeMarkers(this.name)" id="Birmingham" name="0"> <b>Birmingham</b></p>
       <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(52.4068),lng:parseFloat(-1.5197)}})" onmouseout="removeMarkers(this.name)" id="Coventry" name="1"> <b>Coventry</b></p>
       <p onclick="" onmouseover="markerp({coords:{lat:parseFloat(52.9225),lng:parseFloat(-1.4746)}})" onmouseout="removeMarkers(this.name)" id="Derby" name="1"> <b>Derby</b></p>
-      <p onclick="" onmouseover="markerp({coords:{lat:parseFloat(51.5074),lng:parseFloat(-0.1278)}})" onmouseout="removeMarkers(this.name)" id="London" name="1"> <b>London</b></p>
-      <p onclick="" onmouseover="markerp({coords:{lat:parseFloat(53.4808),lng:parseFloat(-2.2426)}})" onmouseout="removeMarkers(this.name)" id="Nottingham" name="1"> <b>Manchester</b></p>
-      <p onclick="" onmouseover="markerp({coords:{lat:parseFloat(52.9548),lng:parseFloat(-1.1581)}})" onmouseout="removeMarkers(this.name)" id="Nottingham" name="1"> <b>Nottingham</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(51.5074),lng:parseFloat(-0.1278)}})" onmouseout="removeMarkers(this.name)" id="London" name="1"> <b>London</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(53.4808),lng:parseFloat(-2.2426)}})" onmouseout="removeMarkers(this.name)" id="Manchester" name="1"> <b>Manchester</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(52.9548),lng:parseFloat(-1.1581)}})" onmouseout="removeMarkers(this.name)" id="Nottingham" name="1"> <b>Nottingham</b></p>
     </div>
   </div>
   <div id="asyncwait"></div>
   <div id="map"></div>
     
     <script>
-       var map;
-       var infoWin;
-       var marker;
+      var map, marker, infoWin, infoBubble
       
-
       async function choose(props){
         const requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ city: props.id})
       };
-        document.getElementById("asyncwait").innerHTML="LOADING DATA...";
+        document.getElementById("asyncwait").innerHTML=`Loading data for ${props.id}...please wait`;
         const res= await fetch(`http://localhost:3050/city`,requestOptions)
         const data=await res.json();
         if(data) document.getElementById("asyncwait").innerHTML="";
         console.log(data)
-        let nested=data[0].data.dora.exploreV3['sections'][2].items;
+        let nested=data[0]
         for(let i=0;i<nested.length;i++){
           let result={
               coords: {lat:parseFloat(nested[i].listing.lat),lng:parseFloat(nested[i].listing.lng)},
@@ -108,8 +110,8 @@
                infoMarker(result);
 
         }
-        map.setCenter({lat:parseFloat(52.4068),lng:parseFloat(-1.5197)});
-        map.setZoom(9)
+        map.setCenter(loc[props.id]);
+        map.setZoom(11)
         
           
   }
@@ -117,12 +119,22 @@
        
 
        function initMap() {
-         infoWin= new google.maps.InfoWindow({
-            content: ``
-          })
+
+         infoBubble =new InfoBubble({
+            minHeight:500,
+            minWidth: 300,
+            minHeight:200,
+            borderRadius: 10,
+            borderColor: '#aaa',
+            backgroundColor:'#cdb',
+          //disableAutoPan: true
+         })
+          infoBubble.addTab("Tab 1",null)
+          infoBubble.addTab("Tab 2",null)
+         
           map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 6,
-          center: new google.maps.LatLng(52.4,-1.6),
+          zoom: 5,
+          center: new google.maps.LatLng(54.4,-1.6),
           mapTypeId: 'terrain'
         });
       }     
@@ -151,10 +163,15 @@
            })
            
            marker.addListener('click',function(){
-            infoWin.setContent(`<h2>Id:${props.id}</h2>
+            /*infoWin.setContent(`<h2>Id:${props.id}</h2>
              <h2>Name:${props.name}</h2>
-             <img src="${props.pics[0]}" width="500" height="600">`)
-            infoWin.open(map, marker);
+             <img src="${props.pics[0]}" width="500" height="600">`)*/
+
+            infoBubble.updateTab(0,"name",`<h2>Id:${props.id}</h2>
+             <h2>Name:${props.name}</h2>`)
+            infoBubble.updateTab(1,"pic",`<img src="${props.pics[0]}" width="500" height="600">`)
+
+            infoBubble.open(map, marker);
           })
        }  
       

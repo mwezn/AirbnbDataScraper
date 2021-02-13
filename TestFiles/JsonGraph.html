@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<style>
+  .area {
+    fill:steelblue;
+    stroke-width:0;
+  }
+</style>
+</head>
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+
+
+<script>
+  let Daynos=0;
+
+function extract(i){
+    let r={"date":i.calendarDate, "available":i.available, "price": i.price}
+    return r;
+ }
+
+ function toObject(arr){
+   var obj={};
+   let total=0;
+   for (let i=0;i<arr.length;i++){
+     for (let j=0;j<arr[i].length;j++){
+        obj[total]=arr[i][j];
+        total++;
+
+     }
+   }
+   return obj
+ }
+
+
+
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 30, bottom: 30, left: 60},
+        width = 1000 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    
+    //Read the data
+    d3.json("Availability2.json",function(d) {
+      let f=new Date();
+      let Total=0;
+      let res=[];
+      let finalRes=[];
+      //let data=JSON.parse(d)
+      let req=d.data.merlin.pdpAvailabilityCalendar.calendarMonths;
+      for (let i=0;i<req.length;i++){
+        
+        let month=req[i].days.map(d=>extract(d))
+        res.push(month) //All days of the year(including past unaccessable days!)
+    }
+    let time=f.toISOString()
+    for(let i=0;i<res.length;i++){
+        
+        let f=res[i].filter(d=>d.date>=`${time}`)//we only want future results from tomorow!
+        finalRes.push(f)
+        
+    }
+    console.log(finalRes)
+    let prices=[]
+    for(let i=0;i<finalRes.length;i++){
+      for(let j=0;j<finalRes[i].length;j++){
+        Daynos+=1;
+        let I=finalRes[i][j].price.localPriceFormatted.slice(1)
+        prices.push(parseFloat(I))
+      }
+    }
+    console.log("Daynos"+Daynos)
+    console.log(prices)
+    console.log(d3.min(prices),d3.max(prices))
+    let FINAL_DATA=toObject(finalRes);
+    let FINAL2= Object.keys(FINAL_DATA).map((key) => [Number(key), FINAL_DATA[key]]);
+    console.log(FINAL2)
+
+    var x = d3.scaleLinear()
+        .domain([0,Daynos])
+        .range([ 0, width ]);
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+    
+      // Add Y axis
+    var y = d3.scaleLinear()
+      .domain([0,d3.max(prices)])
+      .range([ height, 0 ]);
+    svg.append("g")
+      .call(d3.axisLeft(y));
+    var bisect = d3.bisector(function(d) { return d.x; }).left;
+    
+    // Create the circle that travels along the curve of chart
+    var focus = svg
+      .append('g')
+      .append('circle')
+        .style("fill", "none")
+        .attr("stroke", "black")
+        .attr('r', 8.5)
+        .style("opacity", 0)
+  
+    // Create the text that travels along the curve of chart
+    var focusText = svg
+      .append('g')
+      .append('text')
+        .style("opacity", 0)
+        .attr("text-anchor", "left")
+        .attr("alignment-baseline", "middle")
+
+    
+
+      svg
+        .append("path")
+        .datum(FINAL2)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d,i) { return x(d[0]) })
+          .y(function(d,i) { 
+            return y(parseFloat(d[1].price["localPriceFormatted"].slice(1)))
+          })
+          )
+    
+  
+    
+    
+    })
+    
+    </script>

@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mwezn/JSONreader.git"
+    "url": ""
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mwezn/JSONreader/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/mwezn/JSONreader#readme",
+  "homepage": "",
   "dependencies": {
     "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1",
