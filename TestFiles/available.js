@@ -26,6 +26,7 @@ fs.readFile('Availability2.json',(err,d)=>{
         res2.push(f)
         
     }
+
     console.log(res2)
   
 
