@@ -20,6 +20,11 @@ async function get(URL){
 
 }
 
+function extract(i){
+    let r={"date":i.calendarDate, "available":i.available, "price": i.price}
+    return r;
+}
+
 
 
 
@@ -47,8 +52,7 @@ router.post('/city', async (req, res) => {
                let URL2=`https://www.airbnb.co.uk/api/v3/PdpAvailabilityCalendar?operationName=PdpAvailabilityCalendar&locale=en-GB&currency=GBP&variables={"request":{"count":12,"listingId":"${id}","month":${month},"year":2021}}&extensions={"persistedQuery":{"version":1,"sha256Hash":"b94ab2c7e743e30b3d0bc92981a55fff22a05b20bcc9bcc25ca075cc95b42aac"}}&_cb=1q3m3ho167j41c`
                let data2= await get(URL2);
                availability[0][i].listing.Calendar=data2
-               //Changed the above line to tidy both the Dora(listing data) & the Merlin(availability data) endpoints
-               //availability.push(data2)
+               
                
            }
     
