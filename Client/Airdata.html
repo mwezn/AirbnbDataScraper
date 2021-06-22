@@ -74,12 +74,12 @@
     <div class="dropdown">
       <label class="shadow"><b>Select UK City:</b></label>
     <div class="dropdown-content">
-      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(52.4862),lng:parseFloat(-1.8904)}})" onmouseout="removeMarkers(this.name)" id="Birmingham" name="0"> <b>Birmingham</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(52.4068),lng:parseFloat(-1.5197)}})" onmouseout="removeMarkers(this.name)" id="Coventry" name="1"> <b>Coventry</b></p>
-      <p onclick="" onmouseover="markerp({coords:{lat:parseFloat(52.9225),lng:parseFloat(-1.4746)}})" onmouseout="removeMarkers(this.name)" id="Derby" name="1"> <b>Derby</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(51.5074),lng:parseFloat(-0.1278)}})" onmouseout="removeMarkers(this.name)" id="London" name="1"> <b>London</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(53.4808),lng:parseFloat(-2.2426)}})" onmouseout="removeMarkers(this.name)" id="Manchester" name="1"> <b>Manchester</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:{lat:parseFloat(52.9548),lng:parseFloat(-1.1581)}})" onmouseout="removeMarkers(this.name)" id="Nottingham" name="1"> <b>Nottingham</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Birmingham" name="0"> <b>Birmingham</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Coventry" name="1"> <b>Coventry</b></p>
+      <p onclick="" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Derby" name="1"> <b>Derby</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="London" name="1"> <b>London</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Manchester" name="1"> <b>Manchester</b></p>
+      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Nottingham" name="1"> <b>Nottingham</b></p>
     </div>
   </div>
   <div id="asyncwait"></div>
@@ -105,7 +105,8 @@
               coords: {lat:parseFloat(nested[i].listing.lat),lng:parseFloat(nested[i].listing.lng)},
               name: nested[i].listing.name,
               id:nested[i].listing.id,
-              pics: nested[i].listing.contextualPictures.map(i=>i.picture)
+              pics: nested[i].listing.contextualPictures.map(i=>i.picture),
+              availability: nested[i].listing.Calendar.data.merlin.pdpAvailabilityCalendar.calendarMonths[0].days
             };
                infoMarker(result);
 
@@ -131,6 +132,7 @@
          })
           infoBubble.addTab("Tab 1",null)
           infoBubble.addTab("Tab 2",null)
+          infoBubble.addTab("Tab 3", null)
           
          
           map = new google.maps.Map(document.getElementById('map'), {
@@ -167,7 +169,8 @@
 
             infoBubble.updateTab(0,"name",`<h2>Id:${props.id}</h2>
              <h2>Name:${props.name}</h2><h2><a target=_blank href=https://www.airbnb.co.uk/rooms/${props.id}>https://www.airbnb.co.uk/rooms/${props.id}</a></h2>`)
-            infoBubble.updateTab(1,"pic",`<img src="${props.pics[0]}" width="500" height="600">`)
+            infoBubble.updateTab(1,"pic",`<img src="${props.pics[0]}" width="500" height="600"><img src="${props.pics[1]}" width="500" height="600">`)
+            infoBubble.updateTab(2,"availability",`<ul><li>${JSON.stringify(props.availability)}</li></ul>`)
             
 
             infoBubble.open(map, marker);
