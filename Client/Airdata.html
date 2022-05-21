@@ -108,7 +108,7 @@
               pics: nested[i].listing.contextualPictures.map(i=>i.picture),
               availability: nested[i].listing.Calendar.data.merlin.pdpAvailabilityCalendar.calendarMonths[0].days
             };
-               infoMarker(result);
+            infoMarker(result);
 
         }
         map.setCenter(loc[props.id]);

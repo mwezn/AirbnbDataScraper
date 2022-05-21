@@ -6,6 +6,7 @@ const fetch= require('node-fetch')
 
 let t=new Date()
 let month= t.getMonth()+1;
+let year=t.getFullYear();
 async function get(URL){
     const requestOptions={
         method: 'GET',
@@ -49,7 +50,7 @@ router.post('/city', async (req, res) => {
            availability.push(nested)
            for(let i=0;i<nested.length;i++){
                let id=nested[i].listing.id
-               let URL2=`https://www.airbnb.co.uk/api/v3/PdpAvailabilityCalendar?operationName=PdpAvailabilityCalendar&locale=en-GB&currency=GBP&variables={"request":{"count":12,"listingId":"${id}","month":${month},"year":2021}}&extensions={"persistedQuery":{"version":1,"sha256Hash":"b94ab2c7e743e30b3d0bc92981a55fff22a05b20bcc9bcc25ca075cc95b42aac"}}&_cb=1q3m3ho167j41c`
+               let URL2=`https://www.airbnb.co.uk/api/v3/PdpAvailabilityCalendar?operationName=PdpAvailabilityCalendar&locale=en-GB&currency=GBP&variables={"request":{"count":12,"listingId":"${id}","month":${month},"year":${year}}}&extensions={"persistedQuery":{"version":1,"sha256Hash":"b94ab2c7e743e30b3d0bc92981a55fff22a05b20bcc9bcc25ca075cc95b42aac"}}&_cb=1q3m3ho167j41c`
                let data2= await get(URL2);
                availability[0][i].listing.Calendar=data2
                
