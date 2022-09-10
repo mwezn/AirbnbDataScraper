@@ -87,7 +87,8 @@
     
     <script>
       var map, marker, infoWin, infoBubble
-      
+      var t=new Date();
+      console.log(t,t.toISOString())
       async function choose(props){
         const requestOptions = {
           method: 'POST',

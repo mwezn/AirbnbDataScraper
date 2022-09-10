@@ -5,6 +5,7 @@ const app =express();
 const routes = require('./routes') // includes the routes.js file
 var path =require('path');
 
+
 function myMiddleWare(req,res,next){
   console.log(req.method+" "+req.path)
   next();
