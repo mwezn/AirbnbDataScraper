@@ -30,7 +30,7 @@ function extract(i){
 
 
 router.get('/', (req, res) => {
-      res.sendFile(__dirname+'/Client/Airdata.html');
+      res.sendFile(__dirname+'/Client/index.html');
 })
 
 
@@ -45,7 +45,7 @@ router.post('/city', async (req, res) => {
            let data=await get(URL);
            
            let availability=[];
-           let nested=data.data.dora.exploreV3['sections'][1].items;
+           let nested=data.data.dora.exploreV3['sections'][2].items;
            console.log("NESTED"+ nested)
            availability.push(nested)
            for(let i=0;i<nested.length;i++){

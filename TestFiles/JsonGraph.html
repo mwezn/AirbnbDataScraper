@@ -62,8 +62,8 @@ function extract(i){
       let Total=0;
       let res=[];
       let finalRes=[];
-      //let data=JSON.parse(d)
       let req=d.data.merlin.pdpAvailabilityCalendar.calendarMonths;
+      console.log(req,req[1].days)
       for (let i=0;i<req.length;i++){
         
         let month=req[i].days.map(d=>extract(d))
@@ -72,11 +72,11 @@ function extract(i){
     let time=f.toISOString()
     for(let i=0;i<res.length;i++){
         
-        let f=res[i].filter(d=>d.date>=`${time}`)//we only want future results from tomorow!
+        let f=res[i].filter(d=>d.date)//we only want future results from tomorow!
         finalRes.push(f)
         
     }
-    console.log(finalRes)
+    console.log(res,finalRes)
     let prices=[]
     for(let i=0;i<finalRes.length;i++){
       for(let j=0;j<finalRes[i].length;j++){
@@ -87,13 +87,14 @@ function extract(i){
     }
     console.log("Daynos"+Daynos)
     console.log(prices)
-    console.log(d3.min(prices),d3.max(prices))
+    
     let FINAL_DATA=toObject(finalRes);
     let FINAL2= Object.keys(FINAL_DATA).map((key) => [Number(key), FINAL_DATA[key]]);
-    console.log(FINAL2)
+    console.log(FINAL2,FINAL2[364][1].date)
 
-    var x = d3.scaleLinear()
-        .domain([0,Daynos])
+    var x = d3.scaleTime()
+        //.domain([0,Daynos])
+        .domain([new Date(FINAL2[0][1].date),new Date(FINAL2[360][1].date)])
         .range([ 0, width ]);
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")

@@ -1,94 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-<script type="text/javascript" src="infobubble.js"></script>
-<meta charset="utf-8">
-<style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 90%;
-        top:50px;
-      }
-      #asyncwait{
-        position: absolute;
-        font-size: 35px;
-        left: 280px;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        font-family: monospace;
-      }
-.dropdown {
-  position: absolute;
-  display: inline-block;
-  top: 5;
-  left: 0;
-}
-
-
-.dropdown-content {
-  border: 2px black solid;
-  font-size:20px;
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  padding: 12px 16px;
-  z-index: 1;
-  cursor: grab;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.dropdown-content p:hover {background-color:#aaf1ff}
-
-
-.shadow {
-  border: 2px black solid;
-  width: 200px;
-  color:#33cccc;
-  box-shadow: #aaf1ff 10px 10px 5px;
-  font-size: 30px;
-}
-</style>
-  <script>
-    const loc={
-      Birmingham:{lat:parseFloat(52.4862),lng:parseFloat(-1.8904)},
-      Coventry: {lat:parseFloat(52.4068),lng:parseFloat(-1.5197)},
-      London: {lat:parseFloat(51.5074),lng:parseFloat(-0.1278)},
-      Manchester: {lat:parseFloat(53.4808),lng:parseFloat(-2.2426)},
-      Nottingham: {lat:parseFloat(52.9548),lng:parseFloat(-1.1581)}
-
-
-    }
-  </script>
-  </head>
-  <body>
-    <div class="dropdown">
-      <label class="shadow"><b>Select UK City:</b></label>
-    <div class="dropdown-content">
-      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Birmingham" name="0"> <b>Birmingham</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Coventry" name="1"> <b>Coventry</b></p>
-      <p onclick="" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Derby" name="1"> <b>Derby</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="London" name="1"> <b>London</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Manchester" name="1"> <b>Manchester</b></p>
-      <p onclick="choose(this)" onmouseover="markerp({coords:loc[this.id]})" onmouseout="removeMarkers(this.name)" id="Nottingham" name="1"> <b>Nottingham</b></p>
-    </div>
-  </div>
-  <div id="asyncwait"></div>
-  <div id="map"></div>
-    
-    <script>
-      var map, marker, infoWin, infoBubble
+var map, marker, infoWin, infoBubble
       var t=new Date();
       console.log(t,t.toISOString())
+
+      async function default_city(){
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city: 'Coventry'})
+      };
+        document.getElementById("asyncwait").innerHTML=`Loading data for Coventry...please wait`;
+        const res= await fetch(`http://localhost:3050/city`,requestOptions)
+        const data=await res.json();
+        if(data) document.getElementById("asyncwait").innerHTML="";
+        console.log(data)
+        let nested=data[0]
+        for(let i=0;i<nested.length;i++){
+          let result={
+              coords: {lat:parseFloat(nested[i].listing.lat),lng:parseFloat(nested[i].listing.lng)},
+              name: nested[i].listing.name,
+              id:nested[i].listing.id,
+              pics: nested[i].listing.contextualPictures.map(i=>i.picture),
+              availability: nested[i].listing.Calendar.data.merlin.pdpAvailabilityCalendar.calendarMonths[0].days
+            };
+            infoMarker(result);
+
+        }
+        map.setCenter(loc['Coventry']);
+        map.setZoom(11)
+        
+          
+  }
+      
       async function choose(props){
         const requestOptions = {
           method: 'POST',
@@ -124,7 +66,7 @@
 
          infoBubble =new InfoBubble({
             minHeight:500,
-            minWidth: 300,
+            maxWidth: 100,
             minHeight:200,
             borderRadius: 10,
             borderColor: '#aaa',
@@ -167,7 +109,9 @@
            })
            
            marker.addListener('click',function(){
-
+             console.log('clicked')
+             let tab=document.getElementById('infobox')
+             tab.classList.toggle('active')
             infoBubble.updateTab(0,"name",`<h2>Id:${props.id}</h2>
              <h2>Name:${props.name}</h2><h2><a target=_blank href=https://www.airbnb.co.uk/rooms/${props.id}>https://www.airbnb.co.uk/rooms/${props.id}</a></h2>`)
             infoBubble.updateTab(1,"pic",`<img src="${props.pics[0]}" width="500" height="600"><img src="${props.pics[1]}" width="500" height="600">`)
@@ -176,23 +120,9 @@
 
             infoBubble.open(map, marker);
           })
-       }  
+       }
+       default_city();  
       
 
       
 
-
- 
-    
-    
-
-      
-
-      
- </script>
- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCX7s6Co37MxlwhXtSCFncNqdRa5H2q5Ug&callback=initMap">
- </script>
-  
-    
-  </body>
-</html>
