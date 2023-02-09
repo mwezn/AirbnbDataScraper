@@ -7,7 +7,8 @@ var path =require('path');
 
 
 function myMiddleWare(req,res,next){
-  console.log(req.method+" "+req.path)
+  //req.ip can be used to count unique website visitors
+  console.log(req.method+" "+req.path+" "+req.ip) 
   next();
 }
 

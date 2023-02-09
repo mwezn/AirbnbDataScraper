@@ -116,9 +116,15 @@ var map, marker, infoWin, infoBubble
              <h2>Name:${props.name}</h2><h2><a target=_blank href=https://www.airbnb.co.uk/rooms/${props.id}>https://www.airbnb.co.uk/rooms/${props.id}</a></h2>`)
             infoBubble.updateTab(1,"pic",`<img src="${props.pics[0]}" width="500" height="600"><img src="${props.pics[1]}" width="500" height="600">`)
             infoBubble.updateTab(2,"availability",`<ul><li>${JSON.stringify(props.availability)}</li></ul>`)
+            if(!infoBubble.isOpen()){
+              infoBubble.open(map, marker);
+            }
+            else{
+                infoBubble.close()
+                
+            }
+            console.log(infoBubble)
             
-
-            infoBubble.open(map, marker);
           })
        }
        default_city();  
